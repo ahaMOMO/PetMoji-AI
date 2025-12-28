@@ -26,6 +26,35 @@ export const translations = {
       detected: "Detected",
       breed: "Breed",
       expression: "Expression",
+      selectFeature: "Select Creation Type",
+      useFeature: "Start Editing",
+      guide: "Click any type to start editing",
+    },
+    features: {
+      basic: {
+        title: "Basic Emotions",
+        description: "30+ common expressions (smile/wink/tilt/worried, etc.)",
+      },
+      breed: {
+        title: "Breed Specific",
+        description: "20+ breed-specific actions (cat airplane ears/dog wagging tail, etc.)",
+      },
+      style: {
+        title: "Style Transfer",
+        description: "15+ styles (cartoon/Q-version/realistic/pixel, etc.)",
+      },
+      text: {
+        title: "Add Text",
+        description: "Social media fonts + pet meme text templates",
+      },
+      background: {
+        title: "Background Replacement",
+        description: "50+ backgrounds (solid/gradient/pet themes)",
+      },
+      more: {
+        title: "More Features (Coming Soon)",
+        description: "GIF animation/short video generation",
+      },
     },
     templates: {
       title: "Popular Templates",
@@ -122,6 +151,35 @@ export const translations = {
       detected: "检测到",
       breed: "品种",
       expression: "表情",
+      selectFeature: "选择创作类型",
+      useFeature: "开始编辑",
+      guide: "点击任意类型，开始编辑",
+    },
+    features: {
+      basic: {
+        title: "基础表情库",
+        description: "30+通用表情（微笑/眨眼/歪头/委屈等）",
+      },
+      breed: {
+        title: "品种专属表情",
+        description: "20+品种动作（猫咪飞机耳/狗狗摇尾巴等）",
+      },
+      style: {
+        title: "风格转换",
+        description: "15+风格（卡通/Q版/写实/像素等）",
+      },
+      text: {
+        title: "自定义文字添加",
+        description: "社媒字体+宠物表情包文字模板",
+      },
+      background: {
+        title: "背景替换",
+        description: "50+背景（纯色/渐变/宠物主题）",
+      },
+      more: {
+        title: "更多功能（即将上线）",
+        description: "GIF动图/短视频生成（后续开放）",
+      },
     },
     templates: {
       title: "热门模版",

@@ -4,9 +4,8 @@ import { useState } from "react"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { useTemplates } from "@/hooks/use-templates"
 import { TemplateCard } from "@/components/template-card"
-import { GeneratePanel } from "@/components/generate-panel"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { UploadDialog } from "@/components/upload-dialog"
+import { GeneratePanel } from "@/components/generate-panel"
 
 export function TemplatesSection() {
   const { t } = useLanguage()
@@ -17,17 +16,33 @@ export function TemplatesSection() {
 
   const handleTemplateSelect = (templateId: string) => {
     selectTemplate(templateId)
-    if (!uploadedImage) {
-      setShowUploadDialog(true)
-    } else {
-      setShowGeneratePanel(true)
-    }
+    // 点击模版后只触发上传对话框
+    setShowUploadDialog(true)
   }
 
   const handleImageUpload = (image: string) => {
     setUploadedImage(image)
     setShowUploadDialog(false)
+    
+    // 使用模板内置提示词
+    if (selectedTemplate?.prompt) {
+      updatePrompt(selectedTemplate.prompt)
+    }
+    
+    // 直接显示生成面板
     setShowGeneratePanel(true)
+  }
+
+  const handleGeneratePanelClose = () => {
+    setShowGeneratePanel(false)
+    setUploadedImage(null)
+    clearTemplate()
+  }
+
+  const handleGeneratePanelBack = () => {
+    setShowGeneratePanel(false)
+    // 返回上传对话框
+    setShowUploadDialog(true)
   }
 
   return (
@@ -52,22 +67,18 @@ export function TemplatesSection() {
 
         {/* Upload Dialog */}
         <UploadDialog open={showUploadDialog} onClose={() => setShowUploadDialog(false)} onUpload={handleImageUpload} />
-
+        
         {/* Generate Panel Dialog */}
-        <Dialog open={showGeneratePanel} onOpenChange={setShowGeneratePanel}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{t("generate.title")}</DialogTitle>
-            </DialogHeader>
-            <GeneratePanel
-              uploadedImage={uploadedImage}
-              selectedTemplate={selectedTemplate}
-              customPrompt={customPrompt}
-              onPromptChange={updatePrompt}
-              onClearTemplate={clearTemplate}
-            />
-          </DialogContent>
-        </Dialog>
+        <GeneratePanel 
+          uploadedImage={uploadedImage}
+          selectedTemplate={selectedTemplate}
+          customPrompt={customPrompt}
+          onPromptChange={updatePrompt}
+          onClearTemplate={clearTemplate}
+          onClose={handleGeneratePanelClose}
+          onBack={handleGeneratePanelBack}
+          show={showGeneratePanel}
+        />
       </div>
     </section>
   )

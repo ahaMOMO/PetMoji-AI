@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { useDropzone } from "react-dropzone"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, ImageIcon, X, Loader2, Check } from "lucide-react"
+import { Upload, ImageIcon, X, Loader2, Check, Image as ImageIconLucide } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { GeneratePanel } from "@/components/generate-panel"
+import { useTemplates } from "@/hooks/use-templates"
 
 interface AnalysisResult {
   breed: string
@@ -18,6 +20,9 @@ export function UploadSection() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [showGeneratePanel, setShowGeneratePanel] = useState(false)
+  
+  const { selectedTemplate, selectTemplate, clearTemplate, customPrompt, updatePrompt } = useTemplates()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -35,7 +40,7 @@ export function UploadSection() {
     setIsAnalyzing(true)
     setAnalysisResult(null)
 
-    // Simulate API call
+    // 模拟API调用
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     setAnalysisResult({
@@ -43,11 +48,26 @@ export function UploadSection() {
       expression: "Happy 😊",
     })
     setIsAnalyzing(false)
+    // 分析完成后直接显示生成面板
+    setShowGeneratePanel(true)
   }
 
   const clearImage = () => {
     setUploadedImage(null)
     setAnalysisResult(null)
+    setShowGeneratePanel(false)
+    clearTemplate()
+  }
+
+  const handleBack = () => {
+    // 返回上传界面，但不清除图片
+    setShowGeneratePanel(false)
+  }
+
+  const handleClose = () => {
+    // 关闭生成面板，并清除图片
+    setShowGeneratePanel(false)
+    clearImage()
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -111,23 +131,32 @@ export function UploadSection() {
                         <span className="text-muted-foreground">{t("upload.analyzing")}</span>
                       </div>
                     ) : analysisResult ? (
-                      <div className="flex flex-wrap gap-4">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
-                          <Check className="w-4 h-4" />
-                          <span className="font-medium">{t("upload.detected")}</span>
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-4">
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+                            <Check className="w-4 h-4" />
+                            <span className="font-medium">{t("upload.detected")}</span>
+                          </div>
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+                            <ImageIconLucide className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              <span className="text-muted-foreground">{t("upload.breed")}:</span> 
+                              <span className="font-medium">{analysisResult.breed}</span>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+                            <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              <span className="text-muted-foreground">{t("upload.expression")}:</span> 
+                              <span className="font-medium">{analysisResult.expression}</span>
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
-                          <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            <span className="text-muted-foreground">{t("upload.breed")}:</span>{" "}
-                            <span className="font-medium">{analysisResult.breed}</span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
-                          <span className="text-sm">
-                            <span className="text-muted-foreground">{t("upload.expression")}:</span>{" "}
-                            <span className="font-medium">{analysisResult.expression}</span>
-                          </span>
+                        {/* Add Generate Button */}
+                        <div className="flex justify-center">
+                          <Button onClick={() => setShowGeneratePanel(true)} className="bg-primary hover:bg-primary/90">
+                            {t("generate.generate")}
+                          </Button>
                         </div>
                       </div>
                     ) : null}
@@ -138,6 +167,18 @@ export function UploadSection() {
           </Card>
         </div>
       </div>
+
+      {/* Generate Panel Dialog */}
+      <GeneratePanel 
+        uploadedImage={uploadedImage}
+        selectedTemplate={selectedTemplate}
+        customPrompt={customPrompt}
+        onPromptChange={updatePrompt}
+        onClearTemplate={clearTemplate}
+        onClose={handleClose}
+        onBack={handleBack}
+        show={showGeneratePanel}
+      />
     </section>
   )
 }
